@@ -12,3 +12,6 @@ composer.lock
 # Env
 .env
 .env.local
+
+# Database connection
+includes/mysqli_connect.php
