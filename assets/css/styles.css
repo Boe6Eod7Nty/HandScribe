@@ -273,7 +273,7 @@ body {
 }
 
 .icon-text {
-  color: var(--primary-blue);
+  color: var(--white);
   font-size: 18px;
   font-weight: bold;
 }
