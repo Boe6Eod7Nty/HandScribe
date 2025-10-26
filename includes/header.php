@@ -13,6 +13,7 @@
     <!-- Mobile Header -->
     <header class="app-header">
       <div class="header-content">
+        <img src="../assets/images/hand_logo.svg" alt="HandScribe Logo" class="header-logo">
         <h1 class="app-title">LIVE TRANSLATION</h1>
       </div>
     </header>

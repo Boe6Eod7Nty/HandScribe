@@ -57,6 +57,17 @@ body {
   display: flex;
   justify-content: center;
   align-items: center;
+  position: relative;
+}
+
+.header-logo {
+  position: absolute;
+  left: 20px;
+  height: 28px;
+  width: auto;
+  filter: brightness(0) invert(1);
+  top: 50%;
+  transform: translateY(-50%);
 }
 
 .app-title {
