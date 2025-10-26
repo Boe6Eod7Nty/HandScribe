@@ -119,6 +119,86 @@ body {
   object-fit: cover;
 }
 
+/* Camera Video Styles */
+.camera-video {
+  width: 100%;
+  height: 100%;
+  border-radius: 8px;
+  object-fit: cover;
+  display: none; /* Initially hidden */
+}
+
+.camera-placeholder {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  position: relative;
+  background-color: var(--light-blue);
+  border-radius: 8px;
+}
+
+.camera-permission-prompt {
+  position: absolute;
+  bottom: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  text-align: center;
+  background-color: rgba(0, 0, 0, 0.8);
+  padding: 15px 20px;
+  border-radius: 8px;
+  color: var(--white);
+  max-width: 90%;
+}
+
+.camera-permission-prompt p {
+  margin: 0 0 10px 0;
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.btn-enable-camera {
+  background-color: var(--accent-color);
+  color: var(--white);
+  border: none;
+  padding: 8px 16px;
+  border-radius: 4px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.btn-enable-camera:hover {
+  background-color: #0056b3;
+}
+
+.camera-error {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  background-color: var(--light-blue);
+  border-radius: 8px;
+  color: var(--white);
+  text-align: center;
+  padding: 20px;
+}
+
+.camera-error p {
+  margin: 5px 0;
+  font-size: 14px;
+}
+
+.camera-error p:first-child {
+  font-weight: 600;
+  font-size: 16px;
+}
+
 /* Progress Bar */
 .progress-container {
   width: 100%;
