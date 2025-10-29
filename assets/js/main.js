@@ -9,55 +9,62 @@ document.addEventListener('DOMContentLoaded', function () {
   const poseCanvas = document.getElementById('pose-canvas');
   const poseCtx = poseCanvas ? poseCanvas.getContext('2d') : null;
   let animationFrameId = null;
+  let pose = null;
+  let isSending = false;
   
   let stream = null;
   // minimal state
 
-  function updateCanvasSize() {
-    if (!poseCanvas || !cameraFeed) return;
-    // Match canvas drawing buffer to displayed size
-    const width = cameraFeed.clientWidth;
-    const height = cameraFeed.clientHeight;
-    if (width === 0 || height === 0) return;
-    if (poseCanvas.width !== width || poseCanvas.height !== height) {
-      poseCanvas.width = width;
-      poseCanvas.height = height;
+  // Removed test overlay helpers
+
+  async function processFrame() {
+    if (!cameraFeed || !pose) {
+      animationFrameId = window.requestAnimationFrame(processFrame);
+      return;
     }
+    if (!isSending) {
+      isSending = true;
+      try {
+        await pose.send({ image: cameraFeed });
+      } catch (e) {
+        console.error('Pose send error:', e);
+      } finally {
+        isSending = false;
+      }
+    }
+    animationFrameId = window.requestAnimationFrame(processFrame);
   }
 
-  function drawOverlayRectangle() {
+  function onResults(results) {
     if (!poseCtx || !poseCanvas) return;
-    // Clear previous frame
+    // Clear canvas
     poseCtx.clearRect(0, 0, poseCanvas.width, poseCanvas.height);
-    // Rectangle is 50% of frame, centered
-    const rectWidth = poseCanvas.width * 0.5;
-    const rectHeight = poseCanvas.height * 0.5;
-    const rectX = (poseCanvas.width - rectWidth) / 2;
-    const rectY = (poseCanvas.height - rectHeight) / 2;
-    poseCtx.lineWidth = 4;
-    poseCtx.strokeStyle = '#ff0000';
-    poseCtx.strokeRect(rectX, rectY, rectWidth, rectHeight);
+    const landmarks = results && results.poseLandmarks;
+    if (!landmarks || !landmarks.length) return;
+    const nose = landmarks[0];
+    if (!nose) return;
+    const x = nose.x * poseCanvas.width;
+    const y = nose.y * poseCanvas.height;
+    poseCtx.fillStyle = '#00ff00';
+    poseCtx.beginPath();
+    poseCtx.arc(x, y, Math.max(3, Math.round(poseCanvas.width * 0.006)), 0, Math.PI * 2);
+    poseCtx.fill();
   }
 
-  function renderOverlay() {
-    updateCanvasSize();
-    drawOverlayRectangle();
+  function initPose() {
+    if (pose || typeof Pose === 'undefined') return;
+    pose = new Pose({
+      locateFile: f => "https://cdn.jsdelivr.net/npm/@mediapipe/pose/" + f
+    });
+    pose.setOptions({
+      modelComplexity: 0,
+      minDetectionConfidence: 0.5,
+      minTrackingConfidence: 0.5
+    });
+    pose.onResults(onResults);
   }
 
-  function animate() {
-    if (!poseCtx || !poseCanvas) return;
-    // Clear canvas every frame
-    poseCtx.clearRect(0, 0, poseCanvas.width, poseCanvas.height);
-    animationFrameId = window.requestAnimationFrame(animate);
-  }
-
-  // Expose for console debugging
-  window.renderOverlay = renderOverlay;
-  window.handscribeOverlay = {
-    updateCanvasSize,
-    drawOverlayRectangle,
-    renderOverlay
-  };
+  // No debug overlay exports
   
   // Function to start camera
   async function startCamera() {
@@ -92,18 +99,13 @@ document.addEventListener('DOMContentLoaded', function () {
           poseCanvas.width = cameraFeed.videoWidth || poseCanvas.clientWidth || 0;
           poseCanvas.height = cameraFeed.videoHeight || poseCanvas.clientHeight || 0;
         }
-        // Start simple animation loop that clears each frame
+        // Initialize MediaPipe Pose and start processing loop
+        initPose();
         if (animationFrameId !== null) {
           cancelAnimationFrame(animationFrameId);
         }
-        animationFrameId = window.requestAnimationFrame(animate);
+        animationFrameId = window.requestAnimationFrame(processFrame);
       }, { once: true });
-      
-      // Simple window resize redraw
-      window.addEventListener('resize', renderOverlay);
-      
-      // Initial draw
-      renderOverlay();
       
     } catch (error) {
       console.error('Error accessing camera:', error);
@@ -121,6 +123,7 @@ document.addEventListener('DOMContentLoaded', function () {
       cancelAnimationFrame(animationFrameId);
       animationFrameId = null;
     }
+    isSending = false;
     
     // Show placeholder again
     cameraPlaceholder.style.display = 'flex';
@@ -132,7 +135,6 @@ document.addEventListener('DOMContentLoaded', function () {
         poseCtx.clearRect(0, 0, poseCanvas.width, poseCanvas.height);
       }
     }
-    window.removeEventListener('resize', renderOverlay);
     
     console.log('Camera stopped');
   }
@@ -179,46 +181,4 @@ document.addEventListener('DOMContentLoaded', function () {
   // No splash hooks; keep code minimal
 });
 
-// Global overlay helpers (available even if DOMContentLoaded handler didn't run)
-(function setupGlobalOverlayHelpers() {
-  function globalUpdateCanvasSize() {
-    const canvas = document.getElementById('pose-canvas');
-    const video = document.getElementById('camera-feed');
-    if (!canvas || !video) return;
-    const w = video.clientWidth;
-    const h = video.clientHeight;
-    if (!w || !h) return;
-    if (canvas.width !== w || canvas.height !== h) {
-      canvas.width = w;
-      canvas.height = h;
-    }
-  }
-
-  function globalDrawOverlayRectangle() {
-    const canvas = document.getElementById('pose-canvas');
-    if (!canvas) return;
-    const ctx = canvas.getContext('2d');
-    if (!ctx) return;
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-    const rw = canvas.width * 0.5;
-    const rh = canvas.height * 0.5;
-    const rx = (canvas.width - rw) / 2;
-    const ry = (canvas.height - rh) / 2;
-    ctx.lineWidth = 4;
-    ctx.strokeStyle = '#ff0000';
-    ctx.strokeRect(rx, ry, rw, rh);
-  }
-
-  function globalRenderOverlay() {
-    globalUpdateCanvasSize();
-    globalDrawOverlayRectangle();
-  }
-
-  // Expose
-  window.renderOverlay = globalRenderOverlay;
-  window.handscribeOverlay = {
-    updateCanvasSize: globalUpdateCanvasSize,
-    drawOverlayRectangle: globalDrawOverlayRectangle,
-    renderOverlay: globalRenderOverlay
-  };
-})();
+// Removed global overlay test helpers
