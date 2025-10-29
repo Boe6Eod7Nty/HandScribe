@@ -20,6 +20,7 @@ document.addEventListener('DOMContentLoaded', function () {
   let isSending = false;
   
   let stream = null;
+  const containerEl = cameraFeed ? cameraFeed.parentElement : null; // .video-placeholder
   // minimal state
   const drawState = {
     connectorLineWidth: 4,
@@ -120,6 +121,37 @@ document.addEventListener('DOMContentLoaded', function () {
 
   // No debug overlay exports
   
+  function updateMirrorClass() {
+    if (!cameraFeed || !poseCanvas) return;
+    const isFront = (facingModeSelect ? facingModeSelect.value === 'user' : false);
+    cameraFeed.classList.toggle('mirror', isFront);
+    poseCanvas.classList.toggle('mirror', isFront);
+  }
+
+  function syncCanvasToContain() {
+    if (!cameraFeed || !poseCanvas || !containerEl) return;
+    const videoW = cameraFeed.videoWidth || 0;
+    const videoH = cameraFeed.videoHeight || 0;
+    if (!videoW || !videoH) return;
+    const rect = containerEl.getBoundingClientRect();
+    const containerW = rect.width;
+    const containerH = rect.height;
+    const scale = Math.min(containerW / videoW, containerH / videoH); // contain
+    const drawW = videoW * scale;
+    const drawH = videoH * scale;
+    const offsetX = (containerW - drawW) / 2;
+    const offsetY = (containerH - drawH) / 2;
+
+    if (poseCanvas.width !== videoW || poseCanvas.height !== videoH) {
+      poseCanvas.width = videoW;
+      poseCanvas.height = videoH;
+    }
+    poseCanvas.style.width = drawW + 'px';
+    poseCanvas.style.height = drawH + 'px';
+    poseCanvas.style.left = offsetX + 'px';
+    poseCanvas.style.top = offsetY + 'px';
+  }
+
   // Function to start camera
   async function startCamera() {
     try {
@@ -154,6 +186,8 @@ document.addEventListener('DOMContentLoaded', function () {
           poseCanvas.width = cameraFeed.videoWidth || poseCanvas.clientWidth || 0;
           poseCanvas.height = cameraFeed.videoHeight || poseCanvas.clientHeight || 0;
         }
+        updateMirrorClass();
+        syncCanvasToContain();
         // Initialize MediaPipe Holistic and start processing loop
         initHolistic();
         if (animationFrameId !== null) {
@@ -262,6 +296,9 @@ document.addEventListener('DOMContentLoaded', function () {
       startCamera();
     });
   }
+  // Keep canvas aligned on resize/orientation changes
+  window.addEventListener('resize', syncCanvasToContain);
+  window.addEventListener('orientationchange', syncCanvasToContain);
   
   // Check if camera is available on page load
   if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {

@@ -264,7 +264,8 @@ body.loading {
   width: 100%;
   height: 100%;
   border-radius: 8px;
-  object-fit: cover;
+  object-fit: contain; /* was cover */
+  background-color: #000; /* letterbox fill */
   display: none; /* Initially hidden */
 }
 
@@ -279,6 +280,12 @@ body.loading {
   pointer-events: none;
   z-index: 2;
   display: none; /* Match video visibility until enabled via JS */
+}
+
+/* Mirror helper for front camera */
+.camera-video.mirror, .pose-canvas.mirror {
+  transform: scaleX(-1);
+  transform-origin: center center;
 }
 
 .camera-placeholder {
