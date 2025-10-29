@@ -254,6 +254,32 @@ require_once __DIR__ . '/../includes/header.php';
         
         <div class="history-item">
           <div class="history-content">
+            <div class="history-text">"HOW ARE YOU TODAY?"</div>
+            <div class="history-meta">
+              <span class="history-time">15 minutes ago</span>
+              <span class="history-duration">Session: 2m 12s</span>
+            </div>
+          </div>
+          <div class="history-actions">
+            <button class="btn-secondary">VIEW</button>
+          </div>
+        </div>
+        
+        <div class="history-item">
+          <div class="history-content">
+            <div class="history-text">"HOW ARE YOU TODAY?"</div>
+            <div class="history-meta">
+              <span class="history-time">15 minutes ago</span>
+              <span class="history-duration">Session: 2m 12s</span>
+            </div>
+          </div>
+          <div class="history-actions">
+            <button class="btn-secondary">VIEW</button>
+          </div>
+        </div>
+        
+        <div class="history-item">
+          <div class="history-content">
             <div class="history-text">"THANK YOU VERY MUCH"</div>
             <div class="history-meta">
               <span class="history-time">1 hour ago</span>

@@ -55,6 +55,7 @@ body {
   left: 0;
   width: 100vw;
   height: 100vh;
+  height: 100dvh;
   background: linear-gradient(135deg, var(--brand1), var(--brand2));
   display: flex;
   flex-direction: column;
@@ -153,6 +154,7 @@ body {
 .main-content {
   display: none;
   min-height: 100vh;
+  min-height: 100dvh;
   display: none; /* will be set to flex via JS when shown */
   flex-direction: column;
 }
@@ -170,6 +172,7 @@ body.loading {
 
 .mobile-app {
   min-height: 100vh !important;
+  min-height: 100dvh !important;
   display: flex !important;
   flex-direction: column !important;
   width: 100% !important; /* Full width on mobile */
@@ -220,6 +223,7 @@ body.loading {
   flex: 1;
   background-color: var(--white);
   padding: 20px;
+  padding-bottom: calc(90px + env(safe-area-inset-bottom));
 }
 
 .content-container {
@@ -463,9 +467,13 @@ body.loading {
 .app-footer {
   background-color: var(--primary-blue);
   padding: 15px 20px;
-  margin-top: auto;
-  position: static;
-  z-index: 100;
+  padding-bottom: calc(15px + env(safe-area-inset-bottom));
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  width: 100%;
+  z-index: 1000;
 }
 
 .footer-nav {
@@ -540,6 +548,14 @@ body.loading {
     box-shadow: 0 0 20px rgba(0,0,0,0.3);
   }
   
+  .app-footer {
+    left: 50%;
+    right: auto;
+    transform: translateX(-50%);
+    width: 100%;
+    max-width: 600px;
+  }
+  
   .app-title {
     font-size: 24px;
   }
@@ -560,6 +576,10 @@ body.loading {
 
 @media (min-width: 1024px) {
   .mobile-app {
+    max-width: 800px;
+  }
+  
+  .app-footer {
     max-width: 800px;
   }
   
