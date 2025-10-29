@@ -8,6 +8,7 @@ document.addEventListener('DOMContentLoaded', function () {
   const enableCameraBtn = document.getElementById('enable-camera-btn');
   const poseCanvas = document.getElementById('pose-canvas');
   const poseCtx = poseCanvas ? poseCanvas.getContext('2d') : null;
+  let animationFrameId = null;
   
   let stream = null;
   // minimal state
@@ -41,6 +42,13 @@ document.addEventListener('DOMContentLoaded', function () {
   function renderOverlay() {
     updateCanvasSize();
     drawOverlayRectangle();
+  }
+
+  function animate() {
+    if (!poseCtx || !poseCanvas) return;
+    // Clear canvas every frame
+    poseCtx.clearRect(0, 0, poseCanvas.width, poseCanvas.height);
+    animationFrameId = window.requestAnimationFrame(animate);
   }
 
   // Expose for console debugging
@@ -79,7 +87,16 @@ document.addEventListener('DOMContentLoaded', function () {
       
       // Ensure canvas matches video dimensions once metadata is available
       cameraFeed.addEventListener('loadedmetadata', () => {
-        renderOverlay();
+        // Size canvas to intrinsic video dimensions
+        if (poseCanvas) {
+          poseCanvas.width = cameraFeed.videoWidth || poseCanvas.clientWidth || 0;
+          poseCanvas.height = cameraFeed.videoHeight || poseCanvas.clientHeight || 0;
+        }
+        // Start simple animation loop that clears each frame
+        if (animationFrameId !== null) {
+          cancelAnimationFrame(animationFrameId);
+        }
+        animationFrameId = window.requestAnimationFrame(animate);
       }, { once: true });
       
       // Simple window resize redraw
@@ -99,6 +116,10 @@ document.addEventListener('DOMContentLoaded', function () {
     if (stream) {
       stream.getTracks().forEach(track => track.stop());
       stream = null;
+    }
+    if (animationFrameId !== null) {
+      cancelAnimationFrame(animationFrameId);
+      animationFrameId = null;
     }
     
     // Show placeholder again
