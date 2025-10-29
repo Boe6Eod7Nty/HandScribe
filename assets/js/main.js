@@ -6,8 +6,50 @@ document.addEventListener('DOMContentLoaded', function () {
   const cameraPlaceholder = document.getElementById('camera-placeholder');
   const cameraError = document.getElementById('camera-error');
   const enableCameraBtn = document.getElementById('enable-camera-btn');
+  const poseCanvas = document.getElementById('pose-canvas');
+  const poseCtx = poseCanvas ? poseCanvas.getContext('2d') : null;
   
   let stream = null;
+  // minimal state
+
+  function updateCanvasSize() {
+    if (!poseCanvas || !cameraFeed) return;
+    // Match canvas drawing buffer to displayed size
+    const width = cameraFeed.clientWidth;
+    const height = cameraFeed.clientHeight;
+    if (width === 0 || height === 0) return;
+    if (poseCanvas.width !== width || poseCanvas.height !== height) {
+      poseCanvas.width = width;
+      poseCanvas.height = height;
+    }
+  }
+
+  function drawOverlayRectangle() {
+    if (!poseCtx || !poseCanvas) return;
+    // Clear previous frame
+    poseCtx.clearRect(0, 0, poseCanvas.width, poseCanvas.height);
+    // Rectangle is 50% of frame, centered
+    const rectWidth = poseCanvas.width * 0.5;
+    const rectHeight = poseCanvas.height * 0.5;
+    const rectX = (poseCanvas.width - rectWidth) / 2;
+    const rectY = (poseCanvas.height - rectHeight) / 2;
+    poseCtx.lineWidth = 4;
+    poseCtx.strokeStyle = '#ff0000';
+    poseCtx.strokeRect(rectX, rectY, rectWidth, rectHeight);
+  }
+
+  function renderOverlay() {
+    updateCanvasSize();
+    drawOverlayRectangle();
+  }
+
+  // Expose for console debugging
+  window.renderOverlay = renderOverlay;
+  window.handscribeOverlay = {
+    updateCanvasSize,
+    drawOverlayRectangle,
+    renderOverlay
+  };
   
   // Function to start camera
   async function startCamera() {
@@ -29,8 +71,22 @@ document.addEventListener('DOMContentLoaded', function () {
       cameraPlaceholder.style.display = 'none';
       cameraError.style.display = 'none';
       cameraFeed.style.display = 'block';
+      if (poseCanvas) {
+        poseCanvas.style.display = 'block';
+      }
       
       console.log('Camera started successfully');
+      
+      // Ensure canvas matches video dimensions once metadata is available
+      cameraFeed.addEventListener('loadedmetadata', () => {
+        renderOverlay();
+      }, { once: true });
+      
+      // Simple window resize redraw
+      window.addEventListener('resize', renderOverlay);
+      
+      // Initial draw
+      renderOverlay();
       
     } catch (error) {
       console.error('Error accessing camera:', error);
@@ -49,6 +105,13 @@ document.addEventListener('DOMContentLoaded', function () {
     cameraPlaceholder.style.display = 'flex';
     cameraError.style.display = 'none';
     cameraFeed.style.display = 'none';
+    if (poseCanvas) {
+      poseCanvas.style.display = 'none';
+      if (poseCtx) {
+        poseCtx.clearRect(0, 0, poseCanvas.width, poseCanvas.height);
+      }
+    }
+    window.removeEventListener('resize', renderOverlay);
     
     console.log('Camera stopped');
   }
@@ -91,4 +154,50 @@ document.addEventListener('DOMContentLoaded', function () {
   
   // Clean up camera stream when page is unloaded
   window.addEventListener('beforeunload', stopCamera);
+
+  // No splash hooks; keep code minimal
 });
+
+// Global overlay helpers (available even if DOMContentLoaded handler didn't run)
+(function setupGlobalOverlayHelpers() {
+  function globalUpdateCanvasSize() {
+    const canvas = document.getElementById('pose-canvas');
+    const video = document.getElementById('camera-feed');
+    if (!canvas || !video) return;
+    const w = video.clientWidth;
+    const h = video.clientHeight;
+    if (!w || !h) return;
+    if (canvas.width !== w || canvas.height !== h) {
+      canvas.width = w;
+      canvas.height = h;
+    }
+  }
+
+  function globalDrawOverlayRectangle() {
+    const canvas = document.getElementById('pose-canvas');
+    if (!canvas) return;
+    const ctx = canvas.getContext('2d');
+    if (!ctx) return;
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    const rw = canvas.width * 0.5;
+    const rh = canvas.height * 0.5;
+    const rx = (canvas.width - rw) / 2;
+    const ry = (canvas.height - rh) / 2;
+    ctx.lineWidth = 4;
+    ctx.strokeStyle = '#ff0000';
+    ctx.strokeRect(rx, ry, rw, rh);
+  }
+
+  function globalRenderOverlay() {
+    globalUpdateCanvasSize();
+    globalDrawOverlayRectangle();
+  }
+
+  // Expose
+  window.renderOverlay = globalRenderOverlay;
+  window.handscribeOverlay = {
+    updateCanvasSize: globalUpdateCanvasSize,
+    drawOverlayRectangle: globalDrawOverlayRectangle,
+    renderOverlay: globalRenderOverlay
+  };
+})();

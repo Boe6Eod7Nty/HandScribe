@@ -30,7 +30,7 @@
     </div> <!-- Close main-content div -->
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
-    <script src="../assets/js/main.js"></script>
+    <script src="../assets/js/main.js?v=<?php echo time(); ?>"></script>
     
     <!-- Splash Screen Animation Script -->
     <script>
@@ -59,6 +59,7 @@
             }
             // Remove loading class
             document.body.classList.remove('loading');
+            // Main content is visible now
           }, 1300);
         }, 2500);
       });

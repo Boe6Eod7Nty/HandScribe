@@ -10,6 +10,7 @@ require_once __DIR__ . '/../includes/header.php';
     <div class="video-display">
       <div class="video-placeholder">
         <video id="camera-feed" class="camera-video" autoplay muted playsinline></video>
+        <canvas id="pose-canvas" class="pose-canvas"></canvas>
         <div id="camera-placeholder" class="camera-placeholder">
           <img src="../assets/images/avatar_placeholder.png" alt="Avatar" class="avatar-image">
           <div class="camera-permission-prompt">
