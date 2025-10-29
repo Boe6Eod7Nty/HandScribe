@@ -16,7 +16,7 @@ document.addEventListener('DOMContentLoaded', function () {
   const stopBtn = document.querySelector('.btn-stop');
   const pauseBtn = document.querySelector('.btn-pause');
   let animationFrameId = null;
-  let pose = null;
+  let holistic = null;
   let isSending = false;
   
   let stream = null;
@@ -31,16 +31,16 @@ document.addEventListener('DOMContentLoaded', function () {
   // Removed test overlay helpers
 
   async function processFrame() {
-    if (!cameraFeed || !pose) {
+    if (!cameraFeed || !holistic) {
       animationFrameId = window.requestAnimationFrame(processFrame);
       return;
     }
     if (!isSending) {
       isSending = true;
       try {
-        await pose.send({ image: cameraFeed });
+        await holistic.send({ image: cameraFeed });
       } catch (e) {
-        console.error('Pose send error:', e);
+        console.error('Holistic send error:', e);
       } finally {
         isSending = false;
       }
@@ -52,31 +52,65 @@ document.addEventListener('DOMContentLoaded', function () {
     if (!poseCtx || !poseCanvas) return;
     // Clear canvas
     poseCtx.clearRect(0, 0, poseCanvas.width, poseCanvas.height);
-    const landmarks = results && results.poseLandmarks;
-    if (!landmarks || !landmarks.length) return;
 
-    // Draw full skeleton using MediaPipe drawing_utils
-    if (typeof drawConnectors !== 'undefined' && typeof drawLandmarks !== 'undefined' && typeof POSE_CONNECTIONS !== 'undefined') {
+    // Pose skeleton
+    if (
+      results && results.poseLandmarks && results.poseLandmarks.length &&
+      typeof drawConnectors !== 'undefined' && typeof drawLandmarks !== 'undefined' && typeof POSE_CONNECTIONS !== 'undefined'
+    ) {
       const connectorSpec = { color: drawState.connectorColor, lineWidth: drawState.connectorLineWidth };
       const landmarkSpec = { color: drawState.landmarkColor, lineWidth: 0, radius: drawState.landmarkRadius };
-      drawConnectors(poseCtx, landmarks, POSE_CONNECTIONS, connectorSpec);
-      drawLandmarks(poseCtx, landmarks, landmarkSpec);
+      drawConnectors(poseCtx, results.poseLandmarks, POSE_CONNECTIONS, connectorSpec);
+      drawLandmarks(poseCtx, results.poseLandmarks, landmarkSpec);
+    }
+
+    // Left hand with per-finger connections
+    if (
+      results && results.leftHandLandmarks &&
+      typeof HAND_CONNECTIONS !== 'undefined' && typeof drawConnectors !== 'undefined' && typeof drawLandmarks !== 'undefined'
+    ) {
+      drawConnectors(poseCtx, results.leftHandLandmarks, HAND_CONNECTIONS, {
+        color: '#34d399',
+        lineWidth: drawState.connectorLineWidth
+      });
+      drawLandmarks(poseCtx, results.leftHandLandmarks, {
+        color: '#34d399',
+        lineWidth: 0,
+        radius: drawState.landmarkRadius
+      });
+    }
+
+    // Right hand with per-finger connections
+    if (
+      results && results.rightHandLandmarks &&
+      typeof HAND_CONNECTIONS !== 'undefined' && typeof drawConnectors !== 'undefined' && typeof drawLandmarks !== 'undefined'
+    ) {
+      drawConnectors(poseCtx, results.rightHandLandmarks, HAND_CONNECTIONS, {
+        color: '#f59e0b',
+        lineWidth: drawState.connectorLineWidth
+      });
+      drawLandmarks(poseCtx, results.rightHandLandmarks, {
+        color: '#f59e0b',
+        lineWidth: 0,
+        radius: drawState.landmarkRadius
+      });
     }
   }
 
-  function initPose() {
-    if (pose || typeof Pose === 'undefined') return;
-    pose = new Pose({
-      locateFile: f => "https://cdn.jsdelivr.net/npm/@mediapipe/pose/" + f
+  function initHolistic() {
+    if (holistic || typeof Holistic === 'undefined') return;
+    holistic = new Holistic({
+      locateFile: f => "https://cdn.jsdelivr.net/npm/@mediapipe/holistic/" + f
     });
     const modelComplexity = modelComplexitySelect ? Number(modelComplexitySelect.value) : 1;
-    pose.setOptions({
+    holistic.setOptions({
       modelComplexity: modelComplexity,
       smoothLandmarks: true,
       minDetectionConfidence: 0.5,
-      minTrackingConfidence: 0.5
+      minTrackingConfidence: 0.5,
+      refineFaceLandmarks: false
     });
-    pose.onResults(onResults);
+    holistic.onResults(onResults);
   }
 
   // No debug overlay exports
@@ -115,8 +149,8 @@ document.addEventListener('DOMContentLoaded', function () {
           poseCanvas.width = cameraFeed.videoWidth || poseCanvas.clientWidth || 0;
           poseCanvas.height = cameraFeed.videoHeight || poseCanvas.clientHeight || 0;
         }
-        // Initialize MediaPipe Pose and start processing loop
-        initPose();
+        // Initialize MediaPipe Holistic and start processing loop
+        initHolistic();
         if (animationFrameId !== null) {
           cancelAnimationFrame(animationFrameId);
         }
@@ -140,9 +174,9 @@ document.addEventListener('DOMContentLoaded', function () {
       animationFrameId = null;
     }
     isSending = false;
-    if (pose) {
-      try { pose.close && pose.close(); } catch (e) { /* ignore */ }
-      pose = null;
+    if (holistic) {
+      try { holistic.close && holistic.close(); } catch (e) { /* ignore */ }
+      holistic = null;
     }
     
     // Show placeholder again
@@ -199,8 +233,8 @@ document.addEventListener('DOMContentLoaded', function () {
   }
   if (modelComplexitySelect) {
     modelComplexitySelect.addEventListener('change', function () {
-      if (pose) {
-        pose.setOptions({ modelComplexity: Number(modelComplexitySelect.value) });
+      if (holistic) {
+        holistic.setOptions({ modelComplexity: Number(modelComplexitySelect.value) });
       }
     });
   }
