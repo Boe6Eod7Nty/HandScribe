@@ -8,12 +8,25 @@ document.addEventListener('DOMContentLoaded', function () {
   const enableCameraBtn = document.getElementById('enable-camera-btn');
   const poseCanvas = document.getElementById('pose-canvas');
   const poseCtx = poseCanvas ? poseCanvas.getContext('2d') : null;
+  // Controls
+  const facingModeSelect = document.getElementById('pose-facing-mode');
+  const modelComplexitySelect = document.getElementById('pose-model-complexity');
+  const lineWidthInput = document.getElementById('pose-line-width');
+  const landmarkSizeInput = document.getElementById('pose-landmark-size');
+  const stopBtn = document.querySelector('.btn-stop');
+  const pauseBtn = document.querySelector('.btn-pause');
   let animationFrameId = null;
   let pose = null;
   let isSending = false;
   
   let stream = null;
   // minimal state
+  const drawState = {
+    connectorLineWidth: 4,
+    landmarkRadius: 4,
+    connectorColor: '#00d1ff',
+    landmarkColor: '#ff006e'
+  };
 
   // Removed test overlay helpers
 
@@ -41,14 +54,14 @@ document.addEventListener('DOMContentLoaded', function () {
     poseCtx.clearRect(0, 0, poseCanvas.width, poseCanvas.height);
     const landmarks = results && results.poseLandmarks;
     if (!landmarks || !landmarks.length) return;
-    const nose = landmarks[0];
-    if (!nose) return;
-    const x = nose.x * poseCanvas.width;
-    const y = nose.y * poseCanvas.height;
-    poseCtx.fillStyle = '#00ff00';
-    poseCtx.beginPath();
-    poseCtx.arc(x, y, Math.max(3, Math.round(poseCanvas.width * 0.006)), 0, Math.PI * 2);
-    poseCtx.fill();
+
+    // Draw full skeleton using MediaPipe drawing_utils
+    if (typeof drawConnectors !== 'undefined' && typeof drawLandmarks !== 'undefined' && typeof POSE_CONNECTIONS !== 'undefined') {
+      const connectorSpec = { color: drawState.connectorColor, lineWidth: drawState.connectorLineWidth };
+      const landmarkSpec = { color: drawState.landmarkColor, lineWidth: 0, radius: drawState.landmarkRadius };
+      drawConnectors(poseCtx, landmarks, POSE_CONNECTIONS, connectorSpec);
+      drawLandmarks(poseCtx, landmarks, landmarkSpec);
+    }
   }
 
   function initPose() {
@@ -56,8 +69,10 @@ document.addEventListener('DOMContentLoaded', function () {
     pose = new Pose({
       locateFile: f => "https://cdn.jsdelivr.net/npm/@mediapipe/pose/" + f
     });
+    const modelComplexity = modelComplexitySelect ? Number(modelComplexitySelect.value) : 1;
     pose.setOptions({
-      modelComplexity: 0,
+      modelComplexity: modelComplexity,
+      smoothLandmarks: true,
       minDetectionConfidence: 0.5,
       minTrackingConfidence: 0.5
     });
@@ -70,11 +85,12 @@ document.addEventListener('DOMContentLoaded', function () {
   async function startCamera() {
     try {
       // Request camera access
+      const facingMode = facingModeSelect ? facingModeSelect.value : 'environment';
       stream = await navigator.mediaDevices.getUserMedia({
         video: {
           width: { ideal: 1280 },
           height: { ideal: 720 },
-          facingMode: 'environment' // Back camera
+          facingMode: facingMode // Back or front camera
         },
         audio: false
       });
@@ -124,6 +140,10 @@ document.addEventListener('DOMContentLoaded', function () {
       animationFrameId = null;
     }
     isSending = false;
+    if (pose) {
+      try { pose.close && pose.close(); } catch (e) { /* ignore */ }
+      pose = null;
+    }
     
     // Show placeholder again
     cameraPlaceholder.style.display = 'flex';
@@ -166,6 +186,43 @@ document.addEventListener('DOMContentLoaded', function () {
   
   // Event listeners
   enableCameraBtn.addEventListener('click', startCamera);
+  if (stopBtn) stopBtn.addEventListener('click', stopCamera);
+  if (pauseBtn) {
+    pauseBtn.addEventListener('click', function () {
+      if (animationFrameId !== null) {
+        cancelAnimationFrame(animationFrameId);
+        animationFrameId = null;
+      } else if (cameraFeed && cameraFeed.srcObject) {
+        animationFrameId = window.requestAnimationFrame(processFrame);
+      }
+    });
+  }
+  if (modelComplexitySelect) {
+    modelComplexitySelect.addEventListener('change', function () {
+      if (pose) {
+        pose.setOptions({ modelComplexity: Number(modelComplexitySelect.value) });
+      }
+    });
+  }
+  if (lineWidthInput) {
+    lineWidthInput.addEventListener('input', function () {
+      const v = Number(lineWidthInput.value);
+      drawState.connectorLineWidth = isFinite(v) ? v : drawState.connectorLineWidth;
+    });
+  }
+  if (landmarkSizeInput) {
+    landmarkSizeInput.addEventListener('input', function () {
+      const v = Number(landmarkSizeInput.value);
+      drawState.landmarkRadius = isFinite(v) ? v : drawState.landmarkRadius;
+    });
+  }
+  if (facingModeSelect) {
+    facingModeSelect.addEventListener('change', function () {
+      // Restart camera with new facing mode
+      stopCamera();
+      startCamera();
+    });
+  }
   
   // Check if camera is available on page load
   if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
