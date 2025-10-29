@@ -53,15 +53,20 @@ document.addEventListener('DOMContentLoaded', function () {
     // Clear canvas
     poseCtx.clearRect(0, 0, poseCanvas.width, poseCanvas.height);
 
-    // Pose skeleton
+    // Pose skeleton (filter out hand/thumb connections and landmarks; keep forearm/wrist)
     if (
       results && results.poseLandmarks && results.poseLandmarks.length &&
       typeof drawConnectors !== 'undefined' && typeof drawLandmarks !== 'undefined' && typeof POSE_CONNECTIONS !== 'undefined'
     ) {
       const connectorSpec = { color: drawState.connectorColor, lineWidth: drawState.connectorLineWidth };
       const landmarkSpec = { color: drawState.landmarkColor, lineWidth: 0, radius: drawState.landmarkRadius };
-      drawConnectors(poseCtx, results.poseLandmarks, POSE_CONNECTIONS, connectorSpec);
-      drawLandmarks(poseCtx, results.poseLandmarks, landmarkSpec);
+
+      const handIdx = new Set([17, 18, 19, 20, 21, 22]);
+      const filteredConnections = POSE_CONNECTIONS.filter(([a, b]) => !handIdx.has(a) && !handIdx.has(b));
+      const nonHandLandmarks = results.poseLandmarks.filter((_, idx) => !handIdx.has(idx));
+
+      drawConnectors(poseCtx, results.poseLandmarks, filteredConnections, connectorSpec);
+      drawLandmarks(poseCtx, nonHandLandmarks, landmarkSpec);
     }
 
     // Left hand with per-finger connections
