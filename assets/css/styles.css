@@ -152,6 +152,9 @@ body {
 /* Main content initially hidden */
 .main-content {
   display: none;
+  min-height: 100vh;
+  display: none; /* will be set to flex via JS when shown */
+  flex-direction: column;
 }
 
 /* Prevent flash of unstyled content */
@@ -460,8 +463,8 @@ body.loading {
 .app-footer {
   background-color: var(--primary-blue);
   padding: 15px 20px;
-  position: sticky;
-  bottom: 0;
+  margin-top: auto;
+  position: static;
   z-index: 100;
 }
 

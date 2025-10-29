@@ -55,7 +55,7 @@
           setTimeout(() => {
             splash.style.display = 'none';
             if (mainContent) {
-              mainContent.style.display = 'block';
+              mainContent.style.display = 'flex';
             }
             // Remove loading class
             document.body.classList.remove('loading');
