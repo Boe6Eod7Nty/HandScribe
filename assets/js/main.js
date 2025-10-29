@@ -128,7 +128,7 @@ document.addEventListener('DOMContentLoaded', function () {
     poseCanvas.classList.toggle('mirror', isFront);
   }
 
-  function syncCanvasToContain() {
+  function syncCanvasToCover() {
     if (!cameraFeed || !poseCanvas || !containerEl) return;
     const videoW = cameraFeed.videoWidth || 0;
     const videoH = cameraFeed.videoHeight || 0;
@@ -136,7 +136,7 @@ document.addEventListener('DOMContentLoaded', function () {
     const rect = containerEl.getBoundingClientRect();
     const containerW = rect.width;
     const containerH = rect.height;
-    const scale = Math.min(containerW / videoW, containerH / videoH); // contain
+    const scale = Math.max(containerW / videoW, containerH / videoH); // cover
     const drawW = videoW * scale;
     const drawH = videoH * scale;
     const offsetX = (containerW - drawW) / 2;
@@ -187,7 +187,7 @@ document.addEventListener('DOMContentLoaded', function () {
           poseCanvas.height = cameraFeed.videoHeight || poseCanvas.clientHeight || 0;
         }
         updateMirrorClass();
-        syncCanvasToContain();
+        syncCanvasToCover();
         // Initialize MediaPipe Holistic and start processing loop
         initHolistic();
         if (animationFrameId !== null) {
@@ -297,8 +297,8 @@ document.addEventListener('DOMContentLoaded', function () {
     });
   }
   // Keep canvas aligned on resize/orientation changes
-  window.addEventListener('resize', syncCanvasToContain);
-  window.addEventListener('orientationchange', syncCanvasToContain);
+  window.addEventListener('resize', syncCanvasToCover);
+  window.addEventListener('orientationchange', syncCanvasToCover);
   
   // Check if camera is available on page load
   if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
