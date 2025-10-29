@@ -1,10 +1,23 @@
 /* HandScribe Mobile-First Live Translation App Styles */
 :root {
+  --brand1: #1f3a67;
+  --brand2: #294d91;
+  --accent: #4bc0c8;
+  --text: #fff;
   --primary-blue: #0E3F6A;
   --light-blue: #87ceeb;
   --white: #ffffff;
   --black: #000000;
   --light-gray: #f5f5f5;
+}
+
+@media (prefers-color-scheme: light) {
+  :root {
+    --brand1: #e7ecff;
+    --brand2: #b0c7ff;
+    --accent: #1f3a67;
+    --text: #1f3a67;
+  }
 }
 
 /* Mobile-First Base Styles */
@@ -31,6 +44,125 @@ body {
   overflow-x: hidden;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  margin: 0;
+  padding: 0;
+}
+
+/* Splash Screen Styles */
+.splash {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: linear-gradient(135deg, var(--brand1), var(--brand2));
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  color: var(--text);
+  z-index: 9999;
+  animation: fadeIn 1.4s ease-in-out forwards;
+  margin: 0;
+  padding: 0;
+}
+
+.splash .logo {
+  width: 224px;
+  height: auto;
+  animation: float 3s ease-in-out infinite, glowPulse 2s ease-in-out infinite alternate;
+  filter: drop-shadow(0 0 10px var(--accent));
+  margin-top: 2.5rem;
+  margin-bottom: 1.2rem;
+  position: relative;
+  z-index: 2;
+}
+
+.splash .ring {
+  width: 340px;
+  height: 340px;
+  border: 6px solid rgba(255, 255, 255, 0.1);
+  border-top: 6px solid var(--accent);
+  border-radius: 50%;
+  position: absolute;
+  top: 42%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  animation: spin 3s linear infinite;
+  filter: drop-shadow(0 0 20px var(--accent));
+  z-index: 1;
+}
+
+.splash h1 {
+  margin-top: 6rem;
+  font-size: 1.9rem;
+  letter-spacing: 1px;
+  font-weight: 600;
+  position: relative;
+  z-index: 2;
+}
+
+.splash p {
+  font-size: 1rem;
+  color: rgba(255, 255, 255, 0.8);
+  margin-top: 0.75rem;
+  letter-spacing: 0.5px;
+  position: relative;
+  z-index: 2;
+}
+
+.splash-footer {
+  position: absolute;
+  bottom: 1rem;
+  width: 100%;
+  text-align: center;
+  color: rgba(255, 255, 255, 0.7);
+  font-size: 0.9rem;
+}
+
+/* Exit animation: slide up + fade out */
+.splash.fade-out {
+  opacity: 0;
+  transform: translateY(-60px);
+  transition: opacity 1.3s ease, transform 1.3s ease;
+}
+
+/* Splash Screen Animations */
+@keyframes spin {
+  from { transform: translate(-50%, -50%) rotate(0deg); }
+  to { transform: translate(-50%, -50%) rotate(360deg); }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: scale(0.95); }
+  to { opacity: 1; transform: scale(1); }
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-10px); }
+}
+
+@keyframes glowPulse {
+  from { filter: drop-shadow(0 0 5px var(--accent)); }
+  to { filter: drop-shadow(0 0 25px var(--accent)); }
+}
+
+/* Main content initially hidden */
+.main-content {
+  display: none;
+}
+
+/* Prevent flash of unstyled content */
+html {
+  margin: 0;
+  padding: 0;
+}
+
+/* Ensure splash screen appears immediately */
+body.loading {
+  overflow: hidden;
 }
 
 .mobile-app {
@@ -40,6 +172,7 @@ body {
   width: 100% !important; /* Full width on mobile */
   max-width: none !important; /* Override any max-width */
   margin: 0 !important; /* Remove any margins */
+  padding: 0 !important; /* Remove any padding */
   background-color: var(--white) !important;
 }
 
