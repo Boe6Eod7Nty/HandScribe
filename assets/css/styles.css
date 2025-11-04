@@ -603,11 +603,11 @@ body.loading {
   }
   
   .app-footer {
-    left: 50%;
-    right: auto;
-    transform: translateX(-50%);
+    left: 0;
+    right: 0;
+    transform: none;
     width: 100%;
-    max-width: 600px;
+    max-width: none;
   }
   
   .app-title {
@@ -634,7 +634,7 @@ body.loading {
   }
   
   .app-footer {
-    max-width: 800px;
+    max-width: none;
   }
   
   .content-container {
