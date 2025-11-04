@@ -25,14 +25,6 @@ require_once __DIR__ . '/../includes/header.php';
       </div>
     </div>
     
-    <!-- Progress Bar -->
-    <div class="progress-container">
-      <div class="progress-bar">
-        <div class="progress-fill"></div>
-        <div class="progress-indicator"></div>
-      </div>
-    </div>
-    
     <!-- Translated Text Display -->
     <div class="translation-display">
       <div class="translated-text">IT'S NICE TO MEET YOU</div>
@@ -40,37 +32,20 @@ require_once __DIR__ . '/../includes/header.php';
     
     <!-- Options Section -->
     <div class="options-section">
-      <div class="options-label">OPTIONS</div>
-      <div class="dropdown-container">
-        <select class="language-dropdown">
-          <option value="english">English</option>
-        </select>
-      </div>
-
-      <!-- MediaPipe Pose Controls -->
-      <div class="pose-controls" style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 12px;">
+      <div class="mode-controls" style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+        <div>
+          <label for="mode-select" class="form-label" style="margin-bottom: 4px;">Mode</label>
+          <select id="mode-select" class="language-dropdown">
+            <option value="asl-to-text">ASL -> Text</option>
+            <option value="text-to-asl">Text -> ASL</option>
+          </select>
+        </div>
         <div>
           <label for="pose-facing-mode" class="form-label" style="margin-bottom: 4px;">Camera</label>
-          <select id="pose-facing-mode" class="form-select form-select-sm">
+          <select id="pose-facing-mode" class="language-dropdown">
             <option value="environment" selected>Back camera</option>
             <option value="user">Front camera</option>
           </select>
-        </div>
-        <div>
-          <label for="pose-model-complexity" class="form-label" style="margin-bottom: 4px;">Model</label>
-          <select id="pose-model-complexity" class="form-select form-select-sm">
-            <option value="0">Lite</option>
-            <option value="1" selected>Full</option>
-            <option value="2">Heavy</option>
-          </select>
-        </div>
-        <div>
-          <label for="pose-line-width" class="form-label" style="margin-bottom: 4px;">Line width</label>
-          <input id="pose-line-width" type="range" min="1" max="10" value="4" class="form-range">
-        </div>
-        <div>
-          <label for="pose-landmark-size" class="form-label" style="margin-bottom: 4px;">Landmark size</label>
-          <input id="pose-landmark-size" type="range" min="1" max="10" value="4" class="form-range">
         </div>
       </div>
     </div>
@@ -78,7 +53,6 @@ require_once __DIR__ . '/../includes/header.php';
     <!-- Action Buttons -->
     <div class="action-buttons">
       <button class="btn-stop">STOP</button>
-      <button class="btn-pause">PAUSE</button>
     </div>
     
   </div>

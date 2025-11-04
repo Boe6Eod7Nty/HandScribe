@@ -10,11 +10,7 @@ document.addEventListener('DOMContentLoaded', function () {
   const poseCtx = poseCanvas ? poseCanvas.getContext('2d') : null;
   // Controls
   const facingModeSelect = document.getElementById('pose-facing-mode');
-  const modelComplexitySelect = document.getElementById('pose-model-complexity');
-  const lineWidthInput = document.getElementById('pose-line-width');
-  const landmarkSizeInput = document.getElementById('pose-landmark-size');
   const stopBtn = document.querySelector('.btn-stop');
-  const pauseBtn = document.querySelector('.btn-pause');
   let animationFrameId = null;
   let holistic = null;
   let isSending = false;
@@ -108,9 +104,9 @@ document.addEventListener('DOMContentLoaded', function () {
     holistic = new Holistic({
       locateFile: f => "https://cdn.jsdelivr.net/npm/@mediapipe/holistic/" + f
     });
-    const modelComplexity = modelComplexitySelect ? Number(modelComplexitySelect.value) : 1;
+    // Default to light model (complexity 0)
     holistic.setOptions({
-      modelComplexity: modelComplexity,
+      modelComplexity: 0,
       smoothLandmarks: true,
       minDetectionConfidence: 0.5,
       minTrackingConfidence: 0.5,
@@ -260,35 +256,6 @@ document.addEventListener('DOMContentLoaded', function () {
   // Event listeners
   enableCameraBtn.addEventListener('click', startCamera);
   if (stopBtn) stopBtn.addEventListener('click', stopCamera);
-  if (pauseBtn) {
-    pauseBtn.addEventListener('click', function () {
-      if (animationFrameId !== null) {
-        cancelAnimationFrame(animationFrameId);
-        animationFrameId = null;
-      } else if (cameraFeed && cameraFeed.srcObject) {
-        animationFrameId = window.requestAnimationFrame(processFrame);
-      }
-    });
-  }
-  if (modelComplexitySelect) {
-    modelComplexitySelect.addEventListener('change', function () {
-      if (holistic) {
-        holistic.setOptions({ modelComplexity: Number(modelComplexitySelect.value) });
-      }
-    });
-  }
-  if (lineWidthInput) {
-    lineWidthInput.addEventListener('input', function () {
-      const v = Number(lineWidthInput.value);
-      drawState.connectorLineWidth = isFinite(v) ? v : drawState.connectorLineWidth;
-    });
-  }
-  if (landmarkSizeInput) {
-    landmarkSizeInput.addEventListener('input', function () {
-      const v = Number(landmarkSizeInput.value);
-      drawState.landmarkRadius = isFinite(v) ? v : drawState.landmarkRadius;
-    });
-  }
   if (facingModeSelect) {
     facingModeSelect.addEventListener('change', function () {
       // Restart camera with new facing mode
