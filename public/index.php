@@ -51,8 +51,10 @@ require_once __DIR__ . '/../includes/header.php';
     </div>
     
     <!-- Action Buttons -->
-    <div class="action-buttons">
+    <div class="action-buttons" style="display: flex; flex-direction: column; gap: 15px;">
       <button class="btn-stop">STOP</button>
+      <hr style="width: 100%; margin: 15px 0; border: none; border-top: 1px solid #ccc;">
+      <button class="btn-stop">trigger demo text</button>
     </div>
     
   </div>
