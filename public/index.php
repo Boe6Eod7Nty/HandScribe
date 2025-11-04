@@ -12,7 +12,7 @@ require_once __DIR__ . '/../includes/header.php';
         <video id="camera-feed" class="camera-video" autoplay muted playsinline></video>
         <canvas id="pose-canvas" class="pose-canvas"></canvas>
         <div id="camera-placeholder" class="camera-placeholder">
-          <img src="../assets/images/avatar_placeholder.png" alt="Avatar" class="avatar-image">
+          <img src="../assets/images/camera-icon.jpg" alt="Camera Icon" class="camera-icon">
           <div class="camera-permission-prompt">
             <p>Camera access required for live translation</p>
             <button id="enable-camera-btn" class="btn-enable-camera">Enable Camera</button>

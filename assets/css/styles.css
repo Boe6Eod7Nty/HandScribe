@@ -259,6 +259,18 @@ body.loading {
   object-fit: cover;
 }
 
+.camera-icon {
+  max-width: 200px;
+  max-height: 200px;
+  width: auto;
+  height: auto;
+  object-fit: contain;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+
 /* Camera Video Styles */
 .camera-video {
   width: 100%;
@@ -296,7 +308,7 @@ body.loading {
   justify-content: center;
   align-items: center;
   position: relative;
-  background-color: var(--light-blue);
+  background-color: #000000;
   border-radius: 8px;
 }
 
@@ -306,7 +318,7 @@ body.loading {
   left: 50%;
   transform: translateX(-50%);
   text-align: center;
-  background-color: rgba(0, 0, 0, 0.8);
+  background-color: rgba(128, 128, 128, 0.9);
   padding: 15px 20px;
   border-radius: 8px;
   color: var(--white);
@@ -320,8 +332,8 @@ body.loading {
 }
 
 .btn-enable-camera {
-  background-color: var(--accent-color);
-  color: var(--white);
+  background-color: #ffffff;
+  color: #000000;
   border: none;
   padding: 8px 16px;
   border-radius: 4px;
@@ -332,7 +344,7 @@ body.loading {
 }
 
 .btn-enable-camera:hover {
-  background-color: #0056b3;
+  background-color: #e0e0e0;
 }
 
 .camera-error {
