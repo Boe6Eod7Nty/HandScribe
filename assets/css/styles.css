@@ -420,7 +420,7 @@ body.loading {
 }
 
 .translated-text {
-  font-size: 16px;
+  font-size: 32px;
   font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.5px;
@@ -432,6 +432,12 @@ body.loading {
   overflow: hidden;
   text-overflow: ellipsis;
   width: 100%;
+}
+
+.translated-text.placeholder {
+  color: #666;
+  text-transform: none;
+  background-color: transparent;
 }
 
 /* Options Section */
@@ -613,7 +619,7 @@ body.loading {
   }
   
   .translated-text {
-    font-size: 20px;
+    font-size: 40px;
   }
   
   .action-buttons {
@@ -985,5 +991,113 @@ body.loading {
   
   .history-item {
     padding: 20px;
+  }
+}
+
+/* Avatar Page Styles */
+.avatar-container {
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+  padding: 2rem;
+  margin-top: 1rem;
+  text-align: center;
+  max-width: 100%;
+}
+
+.avatar-title {
+  color: var(--primary-blue);
+  margin-bottom: 1.5rem;
+  font-size: 1.5rem;
+  font-weight: 600;
+  text-transform: none;
+  letter-spacing: 0.5px;
+}
+
+.avatar-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1.5rem;
+  margin: 1.5rem 0;
+  justify-items: center;
+}
+
+.avatar {
+  border: 3px solid transparent;
+  border-radius: 50%;
+  transition: all 0.3s ease;
+  width: 120px;
+  height: 120px;
+  object-fit: cover;
+  cursor: pointer;
+}
+
+.avatar:hover {
+  border-color: var(--primary-blue);
+  transform: scale(1.05);
+}
+
+.btn-avatar-confirm {
+  background-color: var(--primary-blue);
+  color: var(--white);
+  border: none;
+  padding: 0.8rem 1.5rem;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 1rem;
+  transition: background-color 0.3s ease;
+  width: 100%;
+  margin-top: 1rem;
+}
+
+.btn-avatar-confirm:hover {
+  background-color: var(--brand2);
+  opacity: 0.9;
+}
+
+.avatar-footer {
+  margin-top: 2rem;
+  color: #666;
+  font-size: 0.9rem;
+  padding: 0;
+}
+
+.avatar-footer p {
+  margin: 0;
+}
+
+/* Avatar Page Responsive Design */
+@media (min-width: 768px) {
+  .avatar-container {
+    max-width: 700px;
+    margin: 2rem auto 0;
+    padding: 2.5rem;
+  }
+  
+  .avatar-title {
+    font-size: 1.8rem;
+  }
+  
+  .avatar-grid {
+    grid-template-columns: repeat(4, 1fr);
+    gap: 2rem;
+  }
+  
+  .avatar {
+    width: 140px;
+    height: 140px;
+  }
+  
+  .btn-avatar-confirm {
+    max-width: 300px;
+    margin: 1.5rem auto 0;
+  }
+}
+
+@media (min-width: 1024px) {
+  .avatar-container {
+    max-width: 800px;
+    padding: 3rem;
   }
 }

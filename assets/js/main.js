@@ -278,6 +278,45 @@ document.addEventListener('DOMContentLoaded', function () {
   // Clean up camera stream when page is unloaded
   window.addEventListener('beforeunload', stopCamera);
 
+  // Demo text functionality
+  const triggerDemoTextBtn = document.getElementById('trigger-demo-text-btn');
+  const translatedTextEl = document.getElementById('translated-text');
+  
+  if (triggerDemoTextBtn && translatedTextEl) {
+    triggerDemoTextBtn.addEventListener('click', function() {
+      // Wait 3 seconds
+      setTimeout(function() {
+        // Remove placeholder class and ensure black color for demo text
+        translatedTextEl.classList.remove('placeholder');
+        translatedTextEl.style.color = '';
+        
+        const targetText = "Hello, my name is Lee. Nice to meet you!";
+        const words = targetText.split(' ');
+        let currentWordIndex = 0;
+        
+        // Function to display words progressively
+        function displayNextWord() {
+          if (currentWordIndex < words.length) {
+            // Display first word, then first 2 words, then first 3 words, etc.
+            const displayedWords = words.slice(0, currentWordIndex + 1);
+            translatedTextEl.textContent = displayedWords.join(' ');
+            currentWordIndex++;
+            
+            // Schedule next word with random variation (±100ms) for organic feel
+            // Base timing: 500ms, random variation: -100ms to +100ms
+            const baseDelay = 500;
+            const randomVariation = (Math.random() * 100) - 100; // -100 to +100
+            const delay = baseDelay + randomVariation;
+            setTimeout(displayNextWord, delay);
+          }
+        }
+        
+        // Start displaying words
+        displayNextWord();
+      }, 3000);
+    });
+  }
+
   // No splash hooks; keep code minimal
 });
 

@@ -27,7 +27,7 @@ require_once __DIR__ . '/../includes/header.php';
     
     <!-- Translated Text Display -->
     <div class="translation-display">
-      <div class="translated-text">IT'S NICE TO MEET YOU</div>
+      <div class="translated-text placeholder" id="translated-text">Translation will appear here</div>
     </div>
     
     <!-- Options Section -->
@@ -54,7 +54,7 @@ require_once __DIR__ . '/../includes/header.php';
     <div class="action-buttons" style="display: flex; flex-direction: column; gap: 15px;">
       <button class="btn-stop">STOP</button>
       <hr style="width: 100%; margin: 15px 0; border: none; border-top: 1px solid #ccc;">
-      <button class="btn-stop">trigger demo text</button>
+      <button class="btn-stop" id="trigger-demo-text-btn">trigger demo text</button>
     </div>
     
   </div>
