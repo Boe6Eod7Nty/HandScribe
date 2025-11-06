@@ -17,7 +17,7 @@
           <div class="nav-icon">
             <span class="icon-text">B</span>
           </div>
-          <span class="nav-label">Education</span>
+          <span class="nav-label">Dictionary</span>
         </a>
         <a href="../public/user.php" class="nav-button">
           <div class="nav-icon">
