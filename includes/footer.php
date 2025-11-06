@@ -11,11 +11,11 @@
           <div class="nav-icon">
             <span class="icon-text">P</span>
           </div>
-          <span class="nav-label">Avatar</span>
+          <span class="nav-label">Persona</span>
         </a>
         <a href="../public/education.php" class="nav-button">
           <div class="nav-icon">
-            <span class="icon-text">B</span>
+            <span class="icon-text">abc</span>
           </div>
           <span class="nav-label">Dictionary</span>
         </a>
